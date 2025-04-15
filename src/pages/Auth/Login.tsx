@@ -1,36 +1,15 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./login.css";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (event: { preventDefault: () => void; }) => {
-    event.preventDefault();
-    setError("");
-
-    try {
-      const response = await fetch("http://localhost:8096/api/v1/logins", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        const user = await response.json();
-        localStorage.setItem("userEmail", user.email);
-        navigate("/home");
-      } else {
-        setError("Invalid email or password");
-      }
-    } catch (error) {
-      setError("An error occurred. Please try again.");
-    }
+  const handleSubmit = async () => {
+    localStorage.setItem("token", "accessToken");
+    navigate("/dashboard");
   };
 
   return (
@@ -55,7 +34,6 @@ function Login() {
             required
           />
         </div>
-        {error && <p className="error-message">{error}</p>}
         <button type="submit">Login</button>
       </form>
       <p>

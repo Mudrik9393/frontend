@@ -1,12 +1,12 @@
 import axios from "axios"
 import { baseUrl } from "./http"
-import { StreetRequest } from "../types/street"
+import { StreetRequest, StreetResponse } from "../types/street"
 
 
 
 const url = baseUrl + "street"
 const getAll = async() => {
-   const response = await (axios.get(url))
+   const response = await (axios.get<StreetResponse>(url))
    return response.data
 }
 
