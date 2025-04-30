@@ -15,29 +15,29 @@ const User = () => {
   }, [user]);
   return (
     <div>
-      <div className="p-2 rounded-sm mb-3">Users</div>
-      <div className="bg-white rounded-md min-h-64 p-4 shadow-md">
-        <div className="mb-3">
+      <div className="p-6 rounded-sm mb-5">Users</div>
+      <div className="bg-white rounded-md min-h-64 p-6 shadow-md">
+        <div className="mb-3 ">
             <input placeholder="Search..." className="border border-slate-200 p-2 rounded-md hover:border-blue-400 focus:border-blue-400" />
             <button className="bg-blue-600 p-1.5 text-white rounded-sm float-right mb-1.5">New user</button>
         </div>
-        <table className="w-full border font-medium border-collapse border-slate-100">
-          <thead>
-            <tr className="bg-gray-100 p-4">
-              <th className="p-1">#</th>
-              <th>Email</th>
-              <th>User Name</th>
-              <th>Zan ID</th>
-              <th>Action</th>
+        <table className="min-w-full text-sm text-left text-gray-700">
+          <thead className="bg-gray-100 text-xs uppercase">
+            <tr>
+              <th className="px-4 py-3">#</th>
+              <th className="px-4 py-3">Email</th>
+              <th className="px-4 py-3">User Name</th>
+              <th className="px-4 py-3">Zan ID</th>
+              <th className="px-4 py-3">Action</th>
             </tr>
           </thead>
           <tbody>
             {user?.map((res, index) => (
-              <tr key={res.id} className="border-b">
-                <td>{1 + index} </td>
-                <td>{res.email}</td>
-                <td>{res.username}</td>
-                <td>{res.zanId}</td>
+              <tr key={res.id}>
+                <td className="px-4 py-3">{1 + index} </td>
+                <td className="px-4 py-3">{res.email}</td>
+                <td className="px-4 py-3">{res.username}</td>
+                <td className="px-4 py-3">{res.zanId}</td>
               </tr>
             ))}
           </tbody>

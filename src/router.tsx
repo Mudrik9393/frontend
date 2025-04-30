@@ -5,6 +5,8 @@ import Signup from "./pages/Auth/Signup";
 import Main from "./components/layout/Main";
 import Dashboard from "./pages/Dashboard";
 import User from "./pages/user/User";
+import Complaint from "./pages/user/Complaint";
+import Request from "./pages/user/Request";
 
 
 export const router = createBrowserRouter([
@@ -32,7 +34,10 @@ export const router = createBrowserRouter([
         children : [
             {path: "/", element : <Navigate to="/dashboard"/>},
             {path: '/dashboard',element: <Dashboard/>},
-            {path: '/user', element: <User/>}
+            {path: '/user', element: <User/>},
+            {path: '/complaint', element: <Complaint/>},
+            {path: '/request', element: <Request/>}
+
         ]
     }
 ])
