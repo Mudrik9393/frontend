@@ -1,12 +1,14 @@
 export type UserRequest = {
-    username: string;
+    userName: string;
     zanId: string
     email: string
+    password: string
 }
 
 export type UserResponse = {
     id: string
-    username: string
+    userName: string
     zanId: string
     email: string
+    password: string
 }
