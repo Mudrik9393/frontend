@@ -39,6 +39,7 @@ const User = () => {
               <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">User Name</th>
               <th className="px-4 py-3">Zan ID</th>
+              <th className="px-4 py-3">PASSWORD</th>
               <th className="px-4 py-3">Action</th>
             </tr>
           </thead>
@@ -49,6 +50,7 @@ const User = () => {
                 <td className="px-4 py-3">{res.email}</td>
                 <td className="px-4 py-3">{res.userName}</td>
                 <td className="px-4 py-3">{res.zanId}</td>
+                <td className="px-4 py-3">{res.password}</td>
                 <td className="space-x-1.5">
                   <Button onClick={() =>{
                      setSelectedUser(res);
