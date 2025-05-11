@@ -17,8 +17,13 @@ import { ComplaintResponse } from "../../types/complaint";
 import complaintService from "../../services/complaint-service";
 
 const schema = yup.object({
-  ComplaintName: yup.string().required("Required"),
+  fullName: yup.string().required("Required"),
+  complaintName: yup.string().required("Required"),
+  accountNumber: yup.string().required("Required"),
   street: yup.string().required("Required"),
+  district: yup.string().required("Required"),
+  phoneNumber: yup.string().required("Required"),
+ 
 });
 
 type ComplaintSubmit = yup.InferType<yup.Schema>;
@@ -39,8 +44,12 @@ const CreateComplaint = ({ open, ...props }: Props) => {
   });
 
   if (props.selectedComplaint) {
-    setValue("ComplaintName", props.selectedComplaint.complaintName);
+    setValue("fullName", props.selectedComplaint.fullName);
+    setValue("complaintName", props.selectedComplaint.complaintName);
+    setValue("accountNumber", props.selectedComplaint.accountNumber);
     setValue("street", props.selectedComplaint.street);
+    setValue("district", props.selectedComplaint.district);
+    setValue("phoneNumber", props.selectedComplaint.phoneNumber);
   }
 
   const onClose = () => {
@@ -55,17 +64,33 @@ const CreateComplaint = ({ open, ...props }: Props) => {
 
   return (
     <Dialog open={open} {...props}>
-      <DialogTitle>New User</DialogTitle>
+      <DialogTitle>New Complaint</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Box className="grid grid-cols-2 gap-2 mb-1.5">
             <div>
               <TextField
+                placeholder="fullName"
+                variant="filled"
+                {...register("fullName")}
+              />
+              <span className="text-red-500">{errors?.fullName?.message}</span>
+            </div>
+            <div>
+              <TextField
                 placeholder="ComplaintName"
                 variant="filled"
-                {...register("ComplaintName")}
+                {...register("complaintName")}
               />
-              <span className="text-red-500">{errors?.ComplaintName?.message}</span>
+              <span className="text-red-500">{errors?.complaintName?.message}</span>
+            </div>
+            <div>
+              <TextField
+                placeholder="accountNumber"
+                variant="filled"
+                {...register("accountNumber")}
+              />
+              <span className="text-red-500">{errors?.accountNumber?.message}</span>
             </div>
             <div>
               <TextField
@@ -74,6 +99,22 @@ const CreateComplaint = ({ open, ...props }: Props) => {
                 {...register("street")}
               />
               <span className="text-red-500">{errors.street?.message}</span>
+            </div>
+            <div>
+              <TextField
+                placeholder="district"
+                variant="filled"
+                {...register("district")}
+              />
+              <span className="text-red-500">{errors?.district?.message}</span>
+            </div>
+            <div>
+              <TextField
+                placeholder="phoneNumber"
+                variant="filled"
+                {...register("phoneNumber")}
+              />
+              <span className="text-red-500">{errors?.phoneNumber?.message}</span>
             </div>
           </Box>
           <div className="grid grid-cols-2 gap-2 mb-1.5">

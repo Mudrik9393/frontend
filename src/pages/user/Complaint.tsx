@@ -37,12 +37,10 @@ const [open, setOpen] = useState(false);
               <th className="px-4 py-3">#</th>
               <th className="px-4 py-3">FullName</th>
               <th className="px-4 py-3">ComplaintName</th>
-              <th className="px-4 py-3">ComplaintType</th>
               <th className="px-4 py-3">Account Number</th>
               <th className="px-4 py-3">Street</th>
               <th className="px-4 py-3">District</th>
               <th className="px-4 py-3">PhoneNumber</th>
-              <th className="px-4 py-3">Date</th>
               <th className="px-4 py-3">Action</th>
             </tr>
           </thead>
@@ -50,8 +48,13 @@ const [open, setOpen] = useState(false);
             {complaint?.map((res, index) => (
               <tr key={res.id}>
                 <td className="px-4 py-3">{1 + index} </td>
+                <td className="px-4 py-3">{res.fullName}</td>
                 <td className="px-4 py-3">{res.complaintName}</td>
+                <td className="px-4 py-3">{res.accountNumber}</td>
                 <td className="px-4 py-3">{res.street}</td>
+                <td className="px-4 py-3">{res.district}</td>
+                <td className="px-4 py-3">{res.phoneNumber}</td>
+                
                 <td className="space-x-1.5">
                   <Button onClick={() =>{
                      setSelectedComplaint(res);

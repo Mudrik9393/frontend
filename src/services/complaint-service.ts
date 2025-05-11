@@ -4,7 +4,7 @@ import { baseUrl } from "./http"
 
 
 
-const url = baseUrl + "complaint/"
+const url = baseUrl + "complaints/"
 const getAll = async() => {
    const response = await axios.get<ComplaintResponse []>(url + "get")
    return response.data
