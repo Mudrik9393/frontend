@@ -10,7 +10,7 @@ export type ComplaintRequest = {
 
 export type ComplaintResponse = {
     
-    id: string
+    id: number
     fullName: string;
     complaintName: string
     accountNumber: string

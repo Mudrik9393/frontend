@@ -6,7 +6,7 @@ export type UserRequest = {
 }
 
 export type UserResponse = {
-    id: string
+    userId: number
     userName: string
     zanId: string
     email: string

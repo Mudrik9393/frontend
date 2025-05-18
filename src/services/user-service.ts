@@ -14,13 +14,13 @@ const createUser = async (data: UserRequest) => {
   return response.data;
 };
 
-const updateUser = async (data: UserRequest, id: string) => {
-  const response = await axios.put(`${url}/update/${id}`, data);
+const updateUser = async (data: UserRequest, id: number) => {
+  const response = await axios.put(url + id, data);
   return response.data;
 };
 
-const deleteUser = async (id: string) => {
-  const response = await axios.delete(`${url}/delete/${id}`);
+const deleteUser = async (id: number) => {
+  const response = await axios.delete(url + id);
   return response.data;
 };
 

@@ -20,9 +20,11 @@ const createComplaint = async (data: ComplaintRequest) => {
   return response.data;
 };
 
-const update = async(data: ComplaintRequest, id: string) => {
-    const response = await(axios.put(url + "/" +id,data));
+const update = async(data: ComplaintRequest, id: number) => {
+    const response = await(axios.put(url +id,data));
     return response.data
 }
+
+
 export default {getAll,getById,createComplaint,update}
 

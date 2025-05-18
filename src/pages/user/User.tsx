@@ -4,6 +4,7 @@ import { UserResponse } from "../../types/user";
 import { Add, Delete, Edit } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import CreateUser from "./CreateUser";
+import toast from "react-hot-toast";
 
 const User = () => {
   const [user, setUser] = useState<UserResponse[]>();
@@ -14,7 +15,13 @@ const User = () => {
   };
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserResponse | null>();
-
+  const deleteUser = async (id: number) => {
+   const resp = await userService.deleteUser(id);
+   if(resp) {
+    toast.success("Deleted")
+   }
+   getUser()
+  }
   useEffect(() => {
     getUser();
     if(!open){
@@ -45,7 +52,7 @@ const User = () => {
           </thead>
           <tbody>
             {user?.map((res, index) => (
-              <tr key={res.id}>
+              <tr key={res.userId}>
                 <td className="px-4 py-3">{1 + index} </td>
                 <td className="px-4 py-3">{res.email}</td>
                 <td className="px-4 py-3">{res.userName}</td>
@@ -56,7 +63,7 @@ const User = () => {
                      setSelectedUser(res);
                      setOpen(true)
                      }}><Edit sx={{color: "blue"}} /> Edit</Button>
-                  <Button><Delete sx={{color: "red"}}/> Delete</Button>
+                  <Button onClick={()=> deleteUser(res.userId)}><Delete sx={{color: "red"}}/> Delete</Button>
                 </td>
               </tr>
             ))}

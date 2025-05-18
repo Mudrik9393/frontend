@@ -23,7 +23,6 @@ const schema = yup.object({
   street: yup.string().required("Required"),
   district: yup.string().required("Required"),
   phoneNumber: yup.string().required("Required"),
- 
 });
 
 type ComplaintSubmit = yup.InferType<yup.Schema>;
@@ -53,11 +52,20 @@ const CreateComplaint = ({ open, ...props }: Props) => {
   }
 
   const onClose = () => {
-    // reset({ email: "", password: "", userName: "", zanId: "" });
+    reset({
+      fullName: "",
+      complaintName: "",
+      accountNumber: "",
+      street: "",
+      district: "",
+      phoneNumber: "",
+    });
     props.onOpenChange?.(false);
   };
   const onSubmit = (data: ComplaintSubmit) => {
-    complaintService.createComplaint(data);
+    props.selectedComplaint
+      ? complaintService.update(data, props.selectedComplaint.id ?? 0)
+      : complaintService.createComplaint(data);
     isSubmitSuccessful && toast.success("Success");
     onClose();
   };
@@ -82,7 +90,9 @@ const CreateComplaint = ({ open, ...props }: Props) => {
                 variant="filled"
                 {...register("complaintName")}
               />
-              <span className="text-red-500">{errors?.complaintName?.message}</span>
+              <span className="text-red-500">
+                {errors?.complaintName?.message}
+              </span>
             </div>
             <div>
               <TextField
@@ -90,7 +100,9 @@ const CreateComplaint = ({ open, ...props }: Props) => {
                 variant="filled"
                 {...register("accountNumber")}
               />
-              <span className="text-red-500">{errors?.accountNumber?.message}</span>
+              <span className="text-red-500">
+                {errors?.accountNumber?.message}
+              </span>
             </div>
             <div>
               <TextField
@@ -114,13 +126,12 @@ const CreateComplaint = ({ open, ...props }: Props) => {
                 variant="filled"
                 {...register("phoneNumber")}
               />
-              <span className="text-red-500">{errors?.phoneNumber?.message}</span>
+              <span className="text-red-500">
+                {errors?.phoneNumber?.message}
+              </span>
             </div>
           </Box>
-          <div className="grid grid-cols-2 gap-2 mb-1.5">
-            
-            
-          </div>
+          <div className="grid grid-cols-2 gap-2 mb-1.5"></div>
 
           <DialogActions>
             <Button
@@ -143,4 +154,3 @@ const CreateComplaint = ({ open, ...props }: Props) => {
 };
 
 export default CreateComplaint;
-

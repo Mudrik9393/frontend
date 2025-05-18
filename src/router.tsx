@@ -7,37 +7,37 @@ import Dashboard from "./pages/Dashboard";
 import User from "./pages/user/User";
 import Complaint from "./pages/user/Complaint";
 import Request from "./pages/user/Request";
-
+import Calculation from "./pages/user/Calculation";
 
 export const router = createBrowserRouter([
-    {
-        path: '/',
-        element: <AuthDashboard />,
-        children: [
-            {
-                path: "/",
-                element: <Navigate to="/login"/>
-            },
-            {
-                path: '/login',
-                element: <Login/>
-            },
-            {
-                path: "signup",
-                element: <Signup/>
-            }
-        ]
-    },
-    {
-        path: '/',
-        element: <Main/>,
-        children : [
-            {path: "/", element : <Navigate to="/dashboard"/>},
-            {path: '/dashboard',element: <Dashboard/>},
-            {path: '/user', element: <User/>},
-            {path: '/complaint', element: <Complaint/>},
-            {path: '/request', element: <Request/>}
-
-        ]
-    }
-])
+  {
+    path: "/",
+    element: <AuthDashboard />,
+    children: [
+      {
+        path: "/",
+        element: <Navigate to="/login" />,
+      },
+      {
+        path: "/login",
+        element: <Login />,
+      },
+      {
+        path: "signup",
+        element: <Signup />,
+      },
+    ],
+  },
+  {
+    path: "/",
+    element: <Main />,
+    children: [
+      { path: "/", element: <Navigate to="/dashboard" /> },
+      { path: "/dashboard", element: <Dashboard /> },
+      { path: "/user", element: <User /> },
+      { path: "/complaint", element: <Complaint /> },
+      { path: "/request", element: <Request /> },
+      { path: "/calculation", element: <Calculation /> },
+    ],
+  },
+]);

@@ -8,7 +8,6 @@ const Main = () => {
     <div>
       <div
         style={{ display: "grid", gridTemplateColumns: "2fr 7fr" }}
-        className=""
       >
         <div>
           <Sidebar />
