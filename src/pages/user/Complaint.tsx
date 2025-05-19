@@ -4,6 +4,7 @@ import { ComplaintResponse } from "../../types/complaint";
 import { Button } from "@mui/material";
 import { Add, Delete, Edit } from "@mui/icons-material";
 import CreateComplaint from "./CreateComplaint";
+import toast from "react-hot-toast";
 
 const Complaint = () => {
   const [complaint, setComplaint] = useState<ComplaintResponse[]>();
@@ -14,6 +15,13 @@ const Complaint = () => {
   };
 const [open, setOpen] = useState(false);
   const [selectedComplaint, setSelectedComplaint] = useState<ComplaintResponse | null>();
+  const deleteComplaint = async(id: number) => {
+    const resp = await complaintService.deleteComplaint(id);
+    if(resp){
+      toast.success("Deleted")
+    }
+    getComplaint()
+  }
 
   useEffect(() => {
     getComplaint();
@@ -60,7 +68,7 @@ const [open, setOpen] = useState(false);
                      setSelectedComplaint(res);
                      setOpen(true)
                      }}><Edit sx={{color: "blue"}} /> Edit</Button>
-                  <Button><Delete sx={{color: "red"}}/> Delete</Button>
+                   <Button onClick={()=> deleteComplaint(res.id)}><Delete sx={{color: "red"}}/> Delete</Button>
                 </td>
     
               </tr>

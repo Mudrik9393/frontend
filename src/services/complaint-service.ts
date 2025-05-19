@@ -23,8 +23,13 @@ const createComplaint = async (data: ComplaintRequest) => {
 const update = async(data: ComplaintRequest, id: number) => {
     const response = await(axios.put(url +id,data));
     return response.data
-}
+};
+
+const deleteComplaint = async (id: number) => {
+  const response = await axios.delete(url + id);
+  return response.data;
+};
 
 
-export default {getAll,getById,createComplaint,update}
+export default {getAll,getById,createComplaint,update,deleteComplaint}
 
