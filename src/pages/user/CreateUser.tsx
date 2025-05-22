@@ -46,11 +46,13 @@ const CreateUser = ({ open, ...props }: Props) => {
   }
 
   const onClose = () => {
-    // reset({ email: "", password: "", userName: "", zanId: "" });
+    reset({ email: "", password: "", userName: "", zanId: "" });
     props.onOpenChange?.(false);
   };
-  const onSubmit = (data: UserSubmit) => {
-    userService.createUser(data);
+ const onSubmit = (data: UserSubmit) => {
+    props.selectedUser
+      ? userService.updateUser(data, props.selectedUser.userId ?? 0)
+      : userService.createUser(data);
     isSubmitSuccessful && toast.success("Success");
     onClose();
   };

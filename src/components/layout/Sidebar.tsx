@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, Box, Collapse } from '@mui/material';
 import { ExpandLess, ExpandMore, Dashboard, ReportProblem, Receipt, Assignment, People } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
+import zawaLogo from "../../assets/image/zawa-logo.png";
+// ensure path is correct
 
 interface SubItem {
   text: string;
@@ -72,16 +74,21 @@ const Sidebar: React.FC = () => {
         '& .MuiDrawer-paper': {
           width: 260,
           boxSizing: 'border-box',
-          backgroundColor: '#e2e8f0',
+          backgroundColor: '#1e2235', // 🔵 dark navy blue
           padding: 2,
         },
       }}
     >
-      <Box sx={{ mt: 2, mb: 4 }}>
-        <Typography variant="h5" fontWeight="bold">
-          ZAWA System
-        </Typography>
-      </Box>
+    <Box sx={{ mt: 10, mb: 4 }}> 
+  <Box className="flex items-center gap-3">
+    <img src={zawaLogo} alt="ZAWA Logo" className="w-25 h-16" /> 
+    <Typography variant="subtitle1" fontWeight="bold" className="text-white"> 
+      ZAWA System
+    </Typography>
+  </Box>
+</Box>
+
+
       <List>
         {menuItems.map((item) => (
           <Box key={item.text}>
