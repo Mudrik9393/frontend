@@ -40,7 +40,6 @@ const CreateUser = ({ open, ...props }: Props) => {
 
   if (props.selectedUser) {
     setValue("email", props.selectedUser.email);
-    setValue("password", props.selectedUser.password);
     setValue("zanId", props.selectedUser.zanId);
     setValue("userName", props.selectedUser.userName);
   }

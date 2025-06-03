@@ -15,6 +15,8 @@ const Main = () => {
         <div className="bg-slate-50">
           <Header />
           <div className="m-2 p-2">
+
+            
             <Outlet />
           </div>
         </div>

@@ -6,16 +6,37 @@ import { Email, Lock, Login as LoginIcon } from "@mui/icons-material";
 const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Save to localStorage
-    localStorage.setItem("email", email);
-    localStorage.setItem("password", password);
-    localStorage.setItem("token", "accessToken");
+    setError("");
 
-    navigate("/dashboard");
+    try {
+      const response = await fetch("http://localhost:5555/api/v1/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      // Soma response kama plain text
+      const text = await response.text();
+
+      if (!response.ok) {
+        throw new Error(text || "Login failed");
+      }
+
+      // Hapa unaweza kuhifadhi token (unaweka dummy-token kwa sasa)
+      localStorage.setItem("token", "dummy-token");
+      localStorage.setItem("userEmail", email);
+
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An unexpected error occurred");
+    }
   };
 
   return (
@@ -44,6 +65,12 @@ const Login = () => {
             Login
           </Typography>
         </Box>
+
+        {error && (
+          <Typography color="error" mb={2}>
+            {error}
+          </Typography>
+        )}
 
         <TextField
           label="Email"
@@ -90,7 +117,7 @@ const Login = () => {
         </Button>
 
         <Typography mt={2} textAlign="center">
-          Don't have an account? <Link to="/Signup">Register</Link>
+          Don't have an account? <Link to="/signup">Register</Link>
         </Typography>
       </Box>
     </Box>

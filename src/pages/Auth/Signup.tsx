@@ -1,43 +1,61 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Box, Button, TextField, Typography, InputAdornment } from "@mui/material";
-import { Person, Email, Lock, HowToReg } from "@mui/icons-material";
+import { useNavigate, Link } from "react-router-dom";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  InputAdornment,
+} from "@mui/material";
+import {
+  HowToReg,
+  Person,
+  Badge,
+  Email,
+  Lock,
+} from "@mui/icons-material";
 
 const Signup = () => {
-  const [fullName, setFullName] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
+  const [zanId, setZanId] = useState<string>(""); // zanId field
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [roleName, setRoleName] = useState<string>("customer"); // default roleName
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
   const navigate = useNavigate();
+
+  const clearForm = () => {
+    setUserName("");
+    setZanId("");
+    setEmail("");
+    setPassword("");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const signupData = {
-      fullName,
-      email,
-      password,
-    };
+    setError("");
+    setSuccess("");
 
     try {
-      const response = await fetch("http://localhost:8096/api/v1/logins", {
+      const response = await fetch("http://localhost:5555/api/v1/auth/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(signupData),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userName, zanId, email, password, roleName }),
       });
 
-      if (response.ok) {
-        alert("Signup successful!");
-        navigate("/login"); // Correct path
-        setFullName("");
-        setEmail("");
-        setPassword("");
-      } else {
-        alert("Signup failed!");
+      const data = await response.text(); // read as text
+
+      if (!response.ok) {
+        throw new Error(data || "Registration failed");
       }
-    } catch (error) {
-      console.error("Error during signup:", error);
-      alert("An error occurred during signup.");
+
+      setSuccess("Registration successful! Redirecting to login...");
+      clearForm();
+
+      setTimeout(() => navigate("/login"), 2000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred during registration");
     }
   };
 
@@ -68,18 +86,47 @@ const Signup = () => {
           </Typography>
         </Box>
 
+        {error && (
+          <Typography color="error" mb={2}>
+            {error}
+          </Typography>
+        )}
+
+        {success && (
+          <Typography color="success.main" mb={2}>
+            {success}
+          </Typography>
+        )}
+
         <TextField
           label="Full Name"
           type="text"
           fullWidth
           margin="normal"
           required
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
                 <Person />
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        <TextField
+          label="Zan ID"
+          type="text"
+          fullWidth
+          margin="normal"
+          required
+          value={zanId}
+          onChange={(e) => setZanId(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Badge />
               </InputAdornment>
             ),
           }}
@@ -128,6 +175,10 @@ const Signup = () => {
         >
           Sign Up
         </Button>
+
+        <Typography mt={2} textAlign="center">
+          Already have an account? <Link to="/login">Login</Link>
+        </Typography>
       </Box>
     </Box>
   );
