@@ -8,6 +8,7 @@ import User from "./pages/user/User";
 import Complaint from "./pages/user/Complaint";
 import Request from "./pages/user/Request";
 import Calculation from "./pages/user/Calculation";
+import ChangePassword from "./pages/user/ChangePassword";
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
         path: "signup",
         element: <Signup />,
       },
+     
     ],
   },
   {
@@ -38,6 +40,7 @@ export const router = createBrowserRouter([
       { path: "/complaint", element: <Complaint /> },
       { path: "/request", element: <Request /> },
       { path: "/calculation", element: <Calculation /> },
+       {path:"/change-password", element: <ChangePassword />},
     ],
   },
 ]);
