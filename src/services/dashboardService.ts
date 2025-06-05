@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = '/api/dashboard'; // Using Vite proxy
+const API_URL = 'http://localhost:5555/api/dashboard'; // Hakuna tena proxy
+ 
 
 export interface DashboardData {
   totalUsers: number;
