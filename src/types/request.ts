@@ -1,10 +1,24 @@
 export type RequestRequest = {
-    name: string;
-    document: string
+    id: number;
+    requestName: string;
+    document: string;
+    date: string;
+    fullName: string;
+    phoneNumber: string;
+    address: string
+    
 }
 
-export type RequestResponse = {
-    id: string
-    name: string
-    document: string
+export interface RequestResponse {
+  requestId: number;
+  requestName: string;
+  document: string;
+  date: string;
+  accountNumber: string;
+  message: string;
+  fullName: string;
+  phoneNumber: string;
+  address: string;
 }
+
+

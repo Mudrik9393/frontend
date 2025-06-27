@@ -7,14 +7,26 @@ import CreateUser from "./CreateUser";
 import toast from "react-hot-toast";
 
 const User = () => {
-  const [user, setUser] = useState<UserResponse[]>();
+  // Initialize as empty array to avoid undefined issues
+  const [user, setUser] = useState<UserResponse[]>([]);
   const [open, setOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<UserResponse | null>();
+  const [selectedUser, setSelectedUser] = useState<UserResponse | null>(null);
 
   const getUser = () => {
-    userService.getAll().then((res) => {
-      setUser(res);
-    });
+    console.log("Fetching users from API...");
+    userService.getAll()
+      .then((res: UserResponse[]) => {
+        console.log("API response:", res); // Debug: inspect response
+        if (Array.isArray(res)) {
+          setUser(res);
+        } else {
+          console.log("Response is not an array:", res); // Debug
+          setUser([]); // fallback
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+      });
   };
 
   const deleteUser = async (id: number) => {
@@ -26,11 +38,8 @@ const User = () => {
   };
 
   useEffect(() => {
+    console.log("Component mounted, calling getUser");
     getUser();
-    if (!open) {
-      getUser();
-      setSelectedUser(null);
-    }
   }, []);
 
   return (
@@ -60,7 +69,7 @@ const User = () => {
             </tr>
           </thead>
           <tbody>
-            {user?.map((res, index) => (
+            {user.map((res, index) => (
               <tr key={res.userId}>
                 <td className="px-4 py-3">{1 + index}</td>
                 <td className="px-4 py-3">{res.email}</td>

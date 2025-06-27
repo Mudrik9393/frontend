@@ -5,22 +5,24 @@ import Footer from "./Footer";
 
 const Main = () => {
   return (
-    <div>
-      <div
-        style={{ display: "grid", gridTemplateColumns: "2fr 7fr" }}
-      >
-        <div>
+    <div className="min-h-screen flex flex-col">
+      {/* Body layout */}
+      <div className="flex flex-1">
+        {/* Sidebar */}
+        <div className="w-1/5 bg-white shadow">
           <Sidebar />
         </div>
-        <div className="bg-slate-50">
-          <Header />
-          <div className="m-2 p-2">
 
-            
+        {/* Main Content Area */}
+        <div className="w-4/5 flex flex-col bg-slate-50">
+          <Header />
+          <div className="flex-1 p-4">
             <Outlet />
           </div>
         </div>
       </div>
+
+      {/* Footer always at the bottom */}
       <Footer />
     </div>
   );

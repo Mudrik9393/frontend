@@ -31,11 +31,14 @@ const [open, setOpen] = useState(false);
     }
   }, []);
   return (
-    <div>
-      <div className="p-8 rounded-sm mb-5">Complaint</div>
-      <div className="bg-white rounded-md min-h-64 p-4 shadow-md">
-        <div className="mb-3">
-            <input placeholder="Search..." className="border border-slate-200 p-2 rounded-md hover:border-blue-400 focus:border-blue-400" />
+<div>
+      <div className="p-6 rounded-sm m-5 text-xl font-semibold">Complaints</div>
+      <div className="bg-white rounded-md min-h-64 p-5 m-4 shadow-md">
+        <div className="mb-4 flex justify-between items-center">
+          <input
+            placeholder="Search..."
+            className="border border-slate-200 p-2 rounded-md hover:border-blue-400 focus:border-blue-400"
+          />
              <Button sx={{backgroundColor: "blue",color: "white",float: "right"}}
                          onClick={() => setOpen(true)}>New Complaint <Add/></Button>
         </div>
