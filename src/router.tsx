@@ -9,6 +9,7 @@ import Complaint from "./pages/user/Complaint";
 import Request from "./pages/user/Request";
 import Calculation from "./pages/user/Calculation";
 import ChangePassword from "./pages/user/ChangePassword";
+import Report from "./pages/user/Report";
 
 export const router = createBrowserRouter([
   {
@@ -40,7 +41,8 @@ export const router = createBrowserRouter([
       { path: "/complaint", element: <Complaint /> },
       { path: "/request", element: <Request /> },
       { path: "/calculation", element: <Calculation /> },
-       {path:"/change-password", element: <ChangePassword />},
+      {path:"/change-password", element: <ChangePassword />},
+      { path: "/report", element: <Report /> },
     ],
   },
 ]);

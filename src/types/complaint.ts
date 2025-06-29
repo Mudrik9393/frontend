@@ -9,14 +9,14 @@ export type ComplaintRequest = {
 }
 
 export type ComplaintResponse = {
-    
-    id: number
+    id: number;
     fullName: string;
-    complaintName: string
-    accountNumber: string
-    street: string
-    district: string
-    phoneNumber: string
-    
-    
+    complaintName: string;
+    accountNumber: string;
+    street: string;
+    district: string;
+    phoneNumber: string;
+
+    latitude: number;    // ongeza hii
+    longitude: number;   // na hii
 }

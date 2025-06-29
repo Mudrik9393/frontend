@@ -1,10 +1,13 @@
 export type BillRequest = {
-    name: string;
-    unit: any
-}
+  billName: string;
+  description?: string;
+  unit: number;
+};
 
 export type BillResponse = {
-    id: string
-    name: string
-    unit: any
-}
+  billId: number;
+  billName: string;
+  description?: string;
+  unit: number;
+  totalAmount: number;
+};

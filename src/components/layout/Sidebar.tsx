@@ -18,6 +18,7 @@ import {
   Receipt,
   Assignment,
   People,
+  Assessment,
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import zawaLogo from '../../assets/image/zawa-logo.png';
@@ -79,6 +80,14 @@ const Sidebar: React.FC = () => {
         { text: 'User List', link: '/user' },
       ],
     },
+    {
+      text: 'Report',
+      icon: <Assessment sx={{ color: '#0288d1' }} />,
+      subItems: [
+        { text: 'Monthly Report', link: '/report/monthly' },
+        { text: 'Annual Report', link: '/report' },
+      ],
+    },
   ];
 
   return (
@@ -113,7 +122,7 @@ const Sidebar: React.FC = () => {
                 <ListItemButton onClick={() => handleClick(item.text)}>
                   <ListItemIcon>{item.icon}</ListItemIcon>
                   <ListItemText primary={item.text} sx={{ color: 'white' }} />
-                  {openMenu === item.text ? <ExpandLess /> : <ExpandMore />}
+                  {openMenu === item.text ? <ExpandLess sx={{ color: 'white' }} /> : <ExpandMore sx={{ color: 'white' }} />}
                 </ListItemButton>
               ) : (
                 <ListItemButton component={Link} to={item.link!}>
