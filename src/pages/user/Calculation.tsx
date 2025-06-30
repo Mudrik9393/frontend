@@ -1,142 +1,168 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
-import type { BillRequest, BillResponse } from "../../types/bill"; // assume types inatoka hapa
-
-interface UserBillsProps {
+type Customer = {
   userId: number;
-}
+  userName: string;
+};
 
-const UserBills: React.FC<UserBillsProps> = ({ userId }) => {
-  const [bills, setBills] = useState<BillResponse[]>([]);
+type BillRequest = {
+  billName: string;
+  description: string;
+  unit: number;
+};
+
+// Hakikisha umeweka image hii kwenye path hii:
+// src/assets/image/zawa-logo.png
+import zawaLogo from "../../assets/image/zawa-logo.png";
+
+
+export default function UserBills() {
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<number | "">("");
   const [formData, setFormData] = useState<BillRequest>({
     billName: "",
     description: "",
     unit: 0,
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  // Load bills za user on mount au userId change
   useEffect(() => {
-    async function fetchBills() {
-      try {
-        const res = await fetch(`http://localhost:5555/api/bills/user/${userId}`);
-        if (res.status === 204) {
-          setBills([]);
-          return;
-        }
-        if (!res.ok) {
-          throw new Error("Failed to fetch bills");
-        }
-        const data: BillResponse[] = await res.json();
-        setBills(data);
-      } catch (err) {
-        setError((err as Error).message);
-      }
-    }
-    if (userId) fetchBills();
-  }, [userId]);
+    axios
+      .get("http://localhost:5555/api/users/customers")
+      .then((res) => setCustomers(res.data))
+      .catch(() => toast.error("Failed to load customers"));
+  }, []);
 
-  // Handle form changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev: any) => ({
-      ...prev,
-      [name]: name === "unit" ? Number(value) : value,
-    }));
+
+    if (name === "unit") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: Number(value),
+      }));
+    } else if (name === "selectedUserId") {
+      setSelectedUserId(value === "" ? "" : Number(value));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
-  // Submit new bill
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (selectedUserId === "" || !formData.billName || formData.unit <= 0) {
+      toast.error("Please fill in all required fields and select customer.");
+      return;
+    }
+
     setLoading(true);
-    setError(null);
     try {
-      const res = await fetch(`http://localhost:5555/api/bills/create/${userId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) {
-        throw new Error(`Failed to create bill, status: ${res.status}`);
-      }
-      const newBill: BillResponse = await res.json();
-      setBills(prev => [...prev, newBill]);
+      await axios.post(
+        `http://localhost:5555/api/bills/create/${selectedUserId}`,
+        formData
+      );
+      toast.success("Bill created successfully");
+
+      // Reset form
+      setSelectedUserId("");
       setFormData({ billName: "", description: "", unit: 0 });
-    } catch (err) {
-      setError((err as Error).message);
+    } catch (error) {
+      toast.error("Failed to create bill");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: 20 }}>
-      <h2>User Bills</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+    <div className="max-w-md mx-auto mt-20 p-6 bg-white rounded-lg shadow">
+      {/* Nembo ya ZAWA */}
+      <div className="flex justify-center mb-6">
+        <img
+          src={zawaLogo}
+          alt="ZAWA Logo"
+          className="h-20 object-contain"
+        />
+      </div>
 
-      <ul>
-        {bills.length === 0 && <li>No bills found.</li>}
-        {bills.map(bill => (
-          <li key={bill.billId} style={{ marginBottom: 10, borderBottom: "1px solid #ccc", paddingBottom: 10 }}>
-            <strong>{bill.billName}</strong><br />
-            Description: {bill.description ?? "No description"}<br />
-            Units: {bill.unit}<br />
-            Total Amount: {bill.totalAmount.toLocaleString()} TZS
-          </li>
-        ))}
-      </ul>
+      <Toaster position="top-center" reverseOrder={false} />
 
-      <h3>Add New Bill</h3>
+      <h2 className="text-2xl font-semibold mb-4">Add Bill</h2>
+
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: 10 }}>
-          <label>
-            Bill Name: <br />
-            <input
-              type="text"
-              name="billName"
-              value={formData.billName}
-              onChange={handleChange}
-              required
-              style={{ width: "100%", padding: 8 }}
-            />
-          </label>
-        </div>
+        <label className="block mb-2 font-medium" htmlFor="selectedUserId">
+          Select Customer
+        </label>
+        <select
+          id="selectedUserId"
+          name="selectedUserId"
+          value={selectedUserId}
+          onChange={handleChange}
+          className="w-full border rounded px-3 py-2 mb-4"
+          required
+        >
+          <option value="">-- Select Customer --</option>
+          {customers.map((c) => (
+            <option key={c.userId} value={c.userId}>
+              {c.userName}
+            </option>
+          ))}
+        </select>
 
-        <div style={{ marginBottom: 10 }}>
-          <label>
-            Description: <br />
-            <input
-              type="text"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              style={{ width: "100%", padding: 8 }}
-            />
-          </label>
-        </div>
+        <label className="block mb-2 font-medium" htmlFor="billName">
+          Bill Name
+        </label>
+        <input
+          type="text"
+          id="billName"
+          name="billName"
+          value={formData.billName}
+          onChange={handleChange}
+          className="w-full border rounded px-3 py-2 mb-4"
+          required
+          placeholder="Enter bill name"
+        />
 
-        <div style={{ marginBottom: 10 }}>
-          <label>
-            Units: <br />
-            <input
-              type="number"
-              name="unit"
-              value={formData.unit}
-              onChange={handleChange}
-              min={1}
-              required
-              style={{ width: "100%", padding: 8 }}
-            />
-          </label>
-        </div>
+        <label className="block mb-2 font-medium" htmlFor="description">
+          Description
+        </label>
+        <input
+          type="text"
+          id="description"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          className="w-full border rounded px-3 py-2 mb-4"
+          placeholder="Optional description"
+        />
 
-        <button type="submit" disabled={loading} style={{ padding: "10px 20px" }}>
-          {loading ? "Saving..." : "Save Bill"}
+        <label className="block mb-2 font-medium" htmlFor="unit">
+          Unit
+        </label>
+        <input
+          type="number"
+          id="unit"
+          name="unit"
+          min={1}
+          value={formData.unit}
+          onChange={handleChange}
+          className="w-full border rounded px-3 py-2 mb-4"
+          required
+        />
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
+        >
+          {loading ? "Submitting..." : "Submit Bill"}
         </button>
       </form>
     </div>
   );
-};
-
-export default UserBills;
+}

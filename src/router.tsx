@@ -10,6 +10,7 @@ import Request from "./pages/user/Request";
 import Calculation from "./pages/user/Calculation";
 import ChangePassword from "./pages/user/ChangePassword";
 import Report from "./pages/user/Report";
+import MeterReaderBills from "./pages/user/MeterReaderBills";
 
 export const router = createBrowserRouter([
   {
@@ -41,6 +42,7 @@ export const router = createBrowserRouter([
       { path: "/complaint", element: <Complaint /> },
       { path: "/request", element: <Request /> },
       { path: "/calculation", element: <Calculation /> },
+      { path: "/meterreaderbills", element: <MeterReaderBills /> },
       {path:"/change-password", element: <ChangePassword />},
       { path: "/report", element: <Report /> },
     ],

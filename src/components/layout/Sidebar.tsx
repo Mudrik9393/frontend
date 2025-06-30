@@ -60,8 +60,8 @@ const Sidebar: React.FC = () => {
       text: 'Bills',
       icon: <Receipt sx={{ color: '#388e3c' }} />,
       subItems: [
-        { text: 'View Bills', link: '/bills/view' },
-        { text: 'Payment History', link: '/bills/history' },
+        { text: 'Add Bill', link: '/calculation' },
+        { text: 'View Bill', link: '/meterreaderbills' },
       ],
     },
     {
@@ -109,7 +109,7 @@ const Sidebar: React.FC = () => {
         <Box className="flex items-center gap-3">
           <img src={zawaLogo} alt="ZAWA Logo" className="w-25 h-16" />
           <Typography variant="subtitle1" fontWeight="bold" className="text-white">
-            ZAWA System
+            ZACORE
           </Typography>
         </Box>
       </Box>
