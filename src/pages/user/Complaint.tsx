@@ -1,85 +1,235 @@
 import { useEffect, useState } from "react";
 import complaintService from "../../services/complaint-service";
 import { ComplaintResponse } from "../../types/complaint";
-import { Button } from "@mui/material";
-import { Add, Delete, Edit } from "@mui/icons-material";
+import { 
+  Button, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  Paper, 
+  IconButton, 
+  Tooltip,
+  Box,
+  TextField,
+  CircularProgress,
+  Typography,
+  useTheme
+} from "@mui/material";
+import { Add, Delete, Edit, Search } from "@mui/icons-material";
 import CreateComplaint from "./CreateComplaint";
 import toast from "react-hot-toast";
 
 const Complaint = () => {
-  const [complaint, setComplaint] = useState<ComplaintResponse[]>();
-  const getComplaint = () => {
-    complaintService.getAll().then((res) => {
-      setComplaint(res);
-    });
+  const [complaints, setComplaints] = useState<ComplaintResponse[]>([]);
+  const [open, setOpen] = useState(false);
+  const [selectedComplaint, setSelectedComplaint] = useState<ComplaintResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const theme = useTheme();
+
+  const getComplaints = () => {
+    setLoading(true);
+    complaintService.getAll()
+      .then((res) => {
+        setComplaints(res);
+      })
+      .catch(() => {
+        toast.error("Failed to load complaints");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
-const [open, setOpen] = useState(false);
-  const [selectedComplaint, setSelectedComplaint] = useState<ComplaintResponse | null>();
-  const deleteComplaint = async(id: number) => {
-    const resp = await complaintService.deleteComplaint(id);
-    if(resp){
-      toast.success("Deleted")
+
+  const deleteComplaint = async (id: number) => {
+    const confirmed = window.confirm("Are you sure you want to delete this complaint?");
+    if (!confirmed) return;
+    
+    try {
+      const resp = await complaintService.deleteComplaint(id);
+      if (resp) {
+        toast.success("Complaint deleted successfully");
+        getComplaints();
+      }
+    } catch (error) {
+      toast.error("Failed to delete complaint");
     }
-    getComplaint()
-  }
+  };
 
   useEffect(() => {
-    getComplaint();
-    if(!open){
-      getComplaint();
-      setSelectedComplaint(null)
-    }
+    getComplaints();
   }, []);
+
+  // Changed to search only by fullName
+  const filteredComplaints = complaints.filter(complaint => 
+    complaint.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Extracted table body content
+  let tableBodyContent;
+  
+  if (loading) {
+    tableBodyContent = (
+      <TableRow>
+        <TableCell colSpan={7} align="center" sx={{ py: 5 }}>
+          <CircularProgress />
+          <Typography variant="body2" mt={2}>Loading complaints...</Typography>
+        </TableCell>
+      </TableRow>
+    );
+  } else if (filteredComplaints.length === 0) {
+    tableBodyContent = (
+      <TableRow>
+        <TableCell colSpan={7} align="center" sx={{ py: 5 }}>
+          <Typography variant="body1">
+            {searchTerm ? "No matching complaints found" : "No complaints available"}
+          </Typography>
+        </TableCell>
+      </TableRow>
+    );
+  } else {
+    tableBodyContent = filteredComplaints.map((complaint, index) => (
+      <TableRow 
+        key={complaint.id} 
+        hover 
+        sx={{ 
+          '&:nth-of-type(odd)': { backgroundColor: theme.palette.action.hover },
+          '&:hover': { backgroundColor: theme.palette.action.selected }
+        }}
+      >
+        <TableCell>{index + 1}</TableCell>
+        <TableCell sx={{ fontWeight: 'medium' }}>{complaint.fullName}</TableCell>
+        <TableCell sx={{ maxWidth: 200 }}>
+          <Typography noWrap title={complaint.complaintName}>
+            {complaint.complaintName}
+          </Typography>
+        </TableCell>
+        <TableCell>{complaint.accountNumber}</TableCell>
+        <TableCell>
+          <Box>
+            <Typography variant="body2">{complaint.street}</Typography>
+            <Typography variant="body2" color="textSecondary">{complaint.district}</Typography>
+          </Box>
+        </TableCell>
+        <TableCell>{complaint.phoneNumber}</TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>
+          <Box display="flex" justifyContent="center" gap={1}>
+            <Tooltip title="Edit complaint">
+              <IconButton 
+                color="primary" 
+                size="small"
+                onClick={() => {
+                  setSelectedComplaint(complaint);
+                  setOpen(true);
+                }}
+              >
+                <Edit fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            
+            <Tooltip title="Delete complaint">
+              <IconButton 
+                color="error" 
+                size="small"
+                onClick={() => deleteComplaint(complaint.id)}
+              >
+                <Delete fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </TableCell>
+      </TableRow>
+    ));
+  }
+
   return (
-<div>
-      <div className="p-6 rounded-sm m-5 text-xl font-semibold">Complaints</div>
-      <div className="bg-white rounded-md min-h-64 p-5 m-4 shadow-md">
-        <div className="mb-4 flex justify-between items-center">
-          <input
-            placeholder="Search..."
-            className="border border-slate-200 p-2 rounded-md hover:border-blue-400 focus:border-blue-400"
-          />
-             <Button sx={{backgroundColor: "blue",color: "white",float: "right"}}
-                         onClick={() => setOpen(true)}>New Complaint <Add/></Button>
-        </div>
-        <table className="min-w-full text-sm text-left text-gray-700">
-          <thead className="bg-gray-100 text-xs uppercase">
-            <tr>
-              <th className="px-4 py-3">#</th>
-              <th className="px-4 py-3">FullName</th>
-              <th className="px-4 py-3">ComplaintName</th>
-              <th className="px-4 py-3">Account Number</th>
-              <th className="px-4 py-3">Street</th>
-              <th className="px-4 py-3">District</th>
-              <th className="px-4 py-3">PhoneNumber</th>
-              <th className="px-4 py-3">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {complaint?.map((res, index) => (
-              <tr key={res.id}>
-                <td className="px-4 py-3">{1 + index} </td>
-                <td className="px-4 py-3">{res.fullName}</td>
-                <td className="px-4 py-3">{res.complaintName}</td>
-                <td className="px-4 py-3">{res.accountNumber}</td>
-                <td className="px-4 py-3">{res.street}</td>
-                <td className="px-4 py-3">{res.district}</td>
-                <td className="px-4 py-3">{res.phoneNumber}</td>
-                
-                <td className="space-x-1.5">
-                  <Button onClick={() =>{
-                     setSelectedComplaint(res);
-                     setOpen(true)
-                     }}><Edit sx={{color: "blue"}} /> Edit</Button>
-                   <Button onClick={()=> deleteComplaint(res.id)}><Delete sx={{color: "red"}}/> Delete</Button>
-                </td>
-    
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <CreateComplaint open={open} onOpenChange={()=> setOpen(false)} selectedComplaint={selectedComplaint!}/>
+    <div className="p-4">
+      <Box 
+        display="flex" 
+        justifyContent="space-between" 
+        alignItems="center" 
+        mb={3}
+        sx={{ backgroundColor: theme.palette.background.paper, p: 3, borderRadius: 2 }}
+      >
+        <Typography variant="h5" fontWeight="bold" color="primary">
+          Complaint Management
+        </Typography>
+      </Box>
+
+      <Paper elevation={2} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+        <Box 
+          display="flex" 
+          justifyContent="space-between" 
+          alignItems="center" 
+          p={2}
+          bgcolor={theme.palette.grey[100]}
+        >
+          <Box display="flex" alignItems="center" gap={2}>
+            <TextField
+              placeholder="Search by Full Name..."
+              variant="outlined"
+              size="small"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: <Search fontSize="small" color="action" sx={{ mr: 1 }} />,
+              }}
+              sx={{ width: 300, backgroundColor: 'white' }}
+            />
+            
+            <Typography variant="body2" color="textSecondary">
+              {filteredComplaints.length} complaint(s) found
+            </Typography>
+          </Box>
+          
+          {/* Moved button to this location */}
+          <Button 
+            variant="contained" 
+            color="primary" 
+            startIcon={<Add />}
+            onClick={() => {
+              setSelectedComplaint(null);
+              setOpen(true);
+            }}
+          >
+            New Complaint
+          </Button>
+        </Box>
+
+        <TableContainer sx={{ maxHeight: 'calc(100vh - 220px)', minHeight: 300 }}>
+          <Table stickyHeader>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[200] }}>#</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[200] }}>Full Name</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[200] }}>Complaint</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[200] }}>Account #</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[200] }}>Location</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[200] }}>Contact</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[200], textAlign: 'center' }}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {tableBodyContent}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+
+      <CreateComplaint 
+        open={open} 
+        onOpenChange={(isOpen) => {
+          setOpen(isOpen);
+          if (!isOpen) {
+            setSelectedComplaint(null);
+          }
+        }}
+        selectedComplaint={selectedComplaint}
+        refreshComplaints={getComplaints}
+      />
     </div>
   );
 };

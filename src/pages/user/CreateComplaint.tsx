@@ -7,11 +7,10 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-
+import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { ComplaintResponse } from "../../types/complaint";
 import complaintService from "../../services/complaint-service";
@@ -25,129 +24,145 @@ const schema = yup.object({
   phoneNumber: yup.string().required("Required"),
 });
 
-type ComplaintSubmit = yup.InferType<yup.Schema>;
+type ComplaintSubmit = yup.InferType<typeof schema>;
 type Props = {
   open: boolean;
-  onOpenChange: Function;
-  selectedComplaint: ComplaintResponse;
+  onOpenChange: (open: boolean) => void;
+  selectedComplaint?: ComplaintResponse | null;
+  refreshComplaints: () => void;
 };
-const CreateComplaint = ({ open, ...props }: Props) => {
+
+const CreateComplaint = ({ open, onOpenChange, selectedComplaint, refreshComplaints }: Props) => {
   const {
     register,
     handleSubmit,
     setValue,
     reset,
-    formState: { errors, isLoading, isSubmitSuccessful },
-  } = useForm({
+    formState: { errors, isSubmitting },
+  } = useForm<ComplaintSubmit>({
     resolver: yupResolver(schema),
   });
 
-  if (props.selectedComplaint) {
-    setValue("fullName", props.selectedComplaint.fullName);
-    setValue("complaintName", props.selectedComplaint.complaintName);
-    setValue("accountNumber", props.selectedComplaint.accountNumber);
-    setValue("street", props.selectedComplaint.street);
-    setValue("district", props.selectedComplaint.district);
-    setValue("phoneNumber", props.selectedComplaint.phoneNumber);
-  }
+  useEffect(() => {
+    if (selectedComplaint) {
+      setValue("fullName", selectedComplaint.fullName);
+      setValue("complaintName", selectedComplaint.complaintName);
+      setValue("accountNumber", selectedComplaint.accountNumber);
+      setValue("street", selectedComplaint.street);
+      setValue("district", selectedComplaint.district);
+      setValue("phoneNumber", selectedComplaint.phoneNumber);
+    } else {
+      reset();
+    }
+  }, [selectedComplaint, setValue, reset]);
 
   const onClose = () => {
-    reset({
-      fullName: "",
-      complaintName: "",
-      accountNumber: "",
-      street: "",
-      district: "",
-      phoneNumber: "",
-    });
-    props.onOpenChange?.(false);
+    reset();
+    onOpenChange(false);
   };
-  const onSubmit = (data: ComplaintSubmit) => {
-    props.selectedComplaint
-      ? complaintService.update(data, props.selectedComplaint.id ?? 0)
-      : complaintService.createComplaint(data);
-    isSubmitSuccessful && toast.success("Success");
-    onClose();
+
+  const onSubmit = async (data: ComplaintSubmit) => {
+    try {
+      if (selectedComplaint) {
+        await complaintService.update(data, selectedComplaint.id);
+        toast.success("Complaint updated successfully");
+      } else {
+        await complaintService.createComplaint(data);
+        toast.success("Complaint created successfully");
+      }
+      refreshComplaints();
+      onClose();
+    } catch (error) {
+      toast.error("Operation failed. Please try again.");
+    }
   };
 
   return (
-    <Dialog open={open} {...props}>
-      <DialogTitle>New Complaint</DialogTitle>
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>{selectedComplaint ? "Edit Complaint" : "New Complaint"}</DialogTitle>
       <DialogContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Box className="grid grid-cols-2 gap-2 mb-1.5">
+        <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+          <Box className="grid grid-cols-2 gap-4 mb-4 mt-2">
             <div>
               <TextField
-                placeholder="fullName"
-                variant="filled"
+                label="Full Name"
+                variant="outlined"
+                fullWidth
+                error={!!errors.fullName}
+                helperText={errors.fullName?.message}
                 {...register("fullName")}
               />
-              <span className="text-red-500">{errors?.fullName?.message}</span>
             </div>
             <div>
               <TextField
-                placeholder="ComplaintName"
-                variant="filled"
+                label="Complaint Name"
+                variant="outlined"
+                fullWidth
+                error={!!errors.complaintName}
+                helperText={errors.complaintName?.message}
                 {...register("complaintName")}
               />
-              <span className="text-red-500">
-                {errors?.complaintName?.message}
-              </span>
             </div>
             <div>
               <TextField
-                placeholder="accountNumber"
-                variant="filled"
+                label="Account Number"
+                variant="outlined"
+                fullWidth
+                error={!!errors.accountNumber}
+                helperText={errors.accountNumber?.message}
                 {...register("accountNumber")}
               />
-              <span className="text-red-500">
-                {errors?.accountNumber?.message}
-              </span>
             </div>
             <div>
               <TextField
-                placeholder="street"
-                variant="filled"
+                label="Street"
+                variant="outlined"
+                fullWidth
+                error={!!errors.street}
+                helperText={errors.street?.message}
                 {...register("street")}
               />
-              <span className="text-red-500">{errors.street?.message}</span>
             </div>
             <div>
               <TextField
-                placeholder="district"
-                variant="filled"
+                label="District"
+                variant="outlined"
+                fullWidth
+                error={!!errors.district}
+                helperText={errors.district?.message}
                 {...register("district")}
               />
-              <span className="text-red-500">{errors?.district?.message}</span>
             </div>
             <div>
               <TextField
-                placeholder="phoneNumber"
-                variant="filled"
+                label="Phone Number"
+                variant="outlined"
+                fullWidth
+                error={!!errors.phoneNumber}
+                helperText={errors.phoneNumber?.message}
                 {...register("phoneNumber")}
               />
-              <span className="text-red-500">
-                {errors?.phoneNumber?.message}
-              </span>
             </div>
           </Box>
-          <div className="grid grid-cols-2 gap-2 mb-1.5"></div>
 
-          <DialogActions>
+          <DialogActions sx={{ px: 0 }}>
             <Button
-              sx={{ backgroundColor: "red", color: "white" }}
-              onClick={() => onClose()}
+              variant="outlined"
+              color="error"
+              onClick={onClose}
             >
-              Close
+              Cancel
             </Button>
             <Button
               type="submit"
-              sx={{ backgroundColor: "blue", color: "white" }}
+              variant="contained"
+              color="primary"
+              disabled={isSubmitting}
             >
-              {isLoading ? "Saving..." : "Save"}
+              {isSubmitting ? "Saving..." : "Save"}
             </Button>
           </DialogActions>
-        </form>
+        </Box>
       </DialogContent>
     </Dialog>
   );

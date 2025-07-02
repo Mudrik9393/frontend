@@ -17,6 +17,6 @@ export type ComplaintResponse = {
     district: string;
     phoneNumber: string;
 
-    latitude: number;    // ongeza hii
-    longitude: number;   // na hii
+    latitude: number;    
+    longitude: number;   
 }
