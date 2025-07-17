@@ -127,11 +127,10 @@ const Dashboard = () => {
     <Box sx={styles.dashboardContainer}>
       <Typography variant="h4" component="h1" gutterBottom sx={{
         fontWeight: 700,
-        mb: 4,
+        mb: 8,
         color: 'primary.main',
         textAlign: 'center'
       }}>
-        System Dashboard
       </Typography>
 
       {/* Stats Cards */}

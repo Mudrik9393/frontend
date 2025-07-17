@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Box, Button, TextField, Typography, InputAdornment } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  InputAdornment,
+} from "@mui/material";
 import { Email, Lock, Login as LoginIcon } from "@mui/icons-material";
 
 const Login = () => {
@@ -22,16 +28,23 @@ const Login = () => {
         body: JSON.stringify({ email, password }),
       });
 
-      // Soma response kama plain text
-      const text = await response.text();
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(text || "Login failed");
+        throw new Error(data || "Login failed");
       }
 
-      // Hapa unaweza kuhifadhi token (unaweka dummy-token kwa sasa)
+      // ✅ Check role
+      if (data.roleName !== "admin" && data.roleName !== "meterreader") {
+        throw new Error("You are not authorized to access the web portal");
+      }
+
+      // ✅ Save info and navigate
       localStorage.setItem("token", "dummy-token");
       localStorage.setItem("userEmail", email);
+      localStorage.setItem("userName", data.userName);
+      localStorage.setItem("roleName", data.roleName);
+      localStorage.setItem("userId", data.userId);
 
       navigate("/dashboard");
     } catch (err) {

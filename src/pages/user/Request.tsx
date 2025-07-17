@@ -174,7 +174,7 @@ const Request = () => {
         justifyContent="space-between" 
         alignItems="center" 
         mb={3}
-        sx={{ backgroundColor: theme.palette.background.paper, p: 3, borderRadius: 2 }}
+        sx={{ backgroundColor: theme.palette.background.paper, p: 5, borderRadius: 2 }}
       >
         <Typography variant="h5" fontWeight="bold" color="primary">
           Request Management
