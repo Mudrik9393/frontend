@@ -6,10 +6,12 @@ import {
 } from "@react-google-maps/api";
 import axios from "axios";
 
-type Location = {
+// Define a common location type
+type MapLocation = {
   latitude: number;
   longitude: number;
-  complaintName: string;
+  name: string;
+  source: "complaint" | "request";
 };
 
 const containerStyle = {
@@ -23,26 +25,46 @@ const defaultCenter = {
 };
 
 const Report = () => {
-  const [locations, setLocations] = useState<Location[]>([]);
+  const [locations, setLocations] = useState<MapLocation[]>([]);
   const mapRef = useRef<google.maps.Map | null>(null);
 
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyD_Zop-kR0XIm6lRh1DSuOnvNBv79ix7qY", // Replace if needed
+    googleMapsApiKey: "AIzaSyD_Zop-kR0XIm6lRh1DSuOnvNBv79ix7qY", // Replace with your actual key if needed
   });
 
-  // Fetch locations from backend
+  // Fetch complaints and requests
   useEffect(() => {
-    axios
-      .get("http://localhost:5555/api/complaints/locations")
-      .then((res) => {
-        setLocations(res.data);
-      })
-      .catch((err) => {
-        console.error("Error fetching locations:", err);
-      });
+    const fetchData = async () => {
+      try {
+        const [complaintsRes, requestsRes] = await Promise.all([
+          axios.get("http://localhost:5555/api/complaints/locations"),
+          axios.get("http://localhost:5555/api/requests/locations"),
+        ]);
+
+        const complaintLocations: MapLocation[] = complaintsRes.data.map((c: any) => ({
+          latitude: c.latitude,
+          longitude: c.longitude,
+          name: c.complaintName,
+          source: "complaint",
+        }));
+
+        const requestLocations: MapLocation[] = requestsRes.data.map((r: any) => ({
+          latitude: r.latitude,
+          longitude: r.longitude,
+          name: r.requestName,
+          source: "request",
+        }));
+
+        setLocations([...complaintLocations, ...requestLocations]);
+      } catch (err) {
+        console.error("Error fetching map data:", err);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  // Fit map bounds to show all markers
+  // Fit map bounds to all markers
   useEffect(() => {
     if (mapRef.current && locations.length > 0) {
       const bounds = new window.google.maps.LatLngBounds();
@@ -62,7 +84,7 @@ const Report = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">Complaint Locations Map</h2>
+      <h2 className="text-xl font-semibold mb-4">Complaint & Request Locations Map</h2>
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={defaultCenter}
@@ -72,8 +94,14 @@ const Report = () => {
           <Marker
             key={index}
             position={{ lat: loc.latitude, lng: loc.longitude }}
-            title={loc.complaintName}
-            label={`${index + 1}`} // Optional: adds marker number
+            title={`${loc.source === "complaint" ? "Complaint" : "Request"}: ${loc.name}`}
+            label={loc.source === "complaint" ? "C" : "R"}
+            icon={{
+              url:
+                loc.source === "complaint"
+                  ? "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                  : "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+            }}
           />
         ))}
       </GoogleMap>

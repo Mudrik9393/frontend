@@ -31,20 +31,21 @@ const Login = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data || "Login failed");
+        throw new Error(data?.message || "Login failed");
       }
 
-      // ✅ Check role
-      if (data.roleName !== "admin" && data.roleName !== "meterreader") {
+      // ✅ Check allowed roles
+      const allowedRoles = ["admin", "meterreader"];
+      if (!allowedRoles.includes(data.roleName)) {
         throw new Error("You are not authorized to access the web portal");
       }
 
-      // ✅ Save info and navigate
-      localStorage.setItem("token", "dummy-token");
-      localStorage.setItem("userEmail", email);
+      // ✅ Save login data to localStorage
+      localStorage.setItem("token", data.token || "dummy-token");
+      localStorage.setItem("userEmail", data.email);
       localStorage.setItem("userName", data.userName);
-      localStorage.setItem("roleName", data.roleName);
       localStorage.setItem("userId", data.userId);
+      localStorage.setItem("role", data.roleName); // important for sidebar
 
       navigate("/dashboard");
     } catch (err) {

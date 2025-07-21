@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Drawer,
   List,
@@ -37,12 +37,20 @@ interface MenuItem {
 
 const Sidebar: React.FC = () => {
   const [openMenu, setOpenMenu] = useState<string>('');
+  const [role, setRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem('role');
+    console.log("Sidebar role found =>", storedRole);
+    setRole(storedRole);
+  }, []);
 
   const handleClick = (menu: string) => {
     setOpenMenu((prev) => (prev === menu ? '' : menu));
   };
 
-  const menuItems: MenuItem[] = [
+  // Menu for Admin
+  const adminMenu: MenuItem[] = [
     {
       text: 'Dashboard',
       icon: <Dashboard sx={{ color: '#1976d2' }} />,
@@ -51,10 +59,31 @@ const Sidebar: React.FC = () => {
     {
       text: 'Complaints',
       icon: <ReportProblem sx={{ color: '#d32f2f' }} />,
-      subItems: [
-        { text: 'New Complaint', link: '/complaint/new' },
-        { text: 'Manage Complaints', link: '/complaint' },
-      ],
+      subItems: [{ text: 'Manage Complaints', link: '/complaint' }],
+    },
+    {
+      text: 'Request',
+      icon: <Assignment sx={{ color: '#f57c00' }} />,
+      subItems: [{ text: 'Track Request', link: '/request' }],
+    },
+    {
+      text: 'User',
+      icon: <People sx={{ color: '#6a1b9a' }} />,
+      subItems: [{ text: 'User List', link: '/user' }],
+    },
+    {
+      text: 'Report',
+      icon: <Assessment sx={{ color: '#0288d1' }} />,
+      subItems: [{ text: 'Overrall Report', link: '/report' }],
+    },
+  ];
+
+  // Menu for Meter Reader
+  const meterReaderMenu: MenuItem[] = [
+    {
+      text: 'Dashboard',
+      icon: <Dashboard sx={{ color: '#1976d2' }} />,
+      link: '/dashboard',
     },
     {
       text: 'Bills',
@@ -64,31 +93,23 @@ const Sidebar: React.FC = () => {
         { text: 'View Bill', link: '/meterreaderbills' },
       ],
     },
-    {
-      text: 'Request',
-      icon: <Assignment sx={{ color: '#f57c00' }} />,
-      subItems: [
-        { text: 'New Request', link: '/request/new' },
-        { text: 'Track Request', link: '/request' },
-      ],
-    },
-    {
-      text: 'User',
-      icon: <People sx={{ color: '#6a1b9a' }} />,
-      subItems: [
-        { text: 'Add User', link: '/user/add' },
-        { text: 'User List', link: '/user' },
-      ],
-    },
-    {
-      text: 'Report',
-      icon: <Assessment sx={{ color: '#0288d1' }} />,
-      subItems: [
-        { text: 'Monthly Report', link: '/report/monthly' },
-        { text: 'Annual Report', link: '/report' },
-      ],
-    },
   ];
+
+  const menuItems =
+    role === 'admin'
+      ? adminMenu
+      : role === 'meterreader'
+      ? meterReaderMenu
+      : [];
+
+  // Show loading if role not yet loaded
+  if (!role) {
+    return (
+      <Box sx={{ color: 'white', padding: 2 }}>
+        Loading sidebar...
+      </Box>
+    );
+  }
 
   return (
     <Drawer
@@ -122,7 +143,11 @@ const Sidebar: React.FC = () => {
                 <ListItemButton onClick={() => handleClick(item.text)}>
                   <ListItemIcon>{item.icon}</ListItemIcon>
                   <ListItemText primary={item.text} sx={{ color: 'white' }} />
-                  {openMenu === item.text ? <ExpandLess sx={{ color: 'white' }} /> : <ExpandMore sx={{ color: 'white' }} />}
+                  {openMenu === item.text ? (
+                    <ExpandLess sx={{ color: 'white' }} />
+                  ) : (
+                    <ExpandMore sx={{ color: 'white' }} />
+                  )}
                 </ListItemButton>
               ) : (
                 <ListItemButton component={Link} to={item.link!}>
