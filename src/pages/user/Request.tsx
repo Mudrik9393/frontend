@@ -16,10 +16,9 @@ import {
   TextField,
   CircularProgress,
   Typography,
-  useTheme,
-  Link
+  useTheme
 } from "@mui/material";
-import { Add, Delete, Edit, Search } from "@mui/icons-material";
+import { Add, Delete, Edit, Search, Visibility, Description } from "@mui/icons-material";
 import toast from "react-hot-toast";
 import CreateRequest from "./CreateRequest";
 
@@ -62,13 +61,11 @@ const Request = () => {
     getRequests();
   }, []);
 
-  // Fixed search with null check
   const filteredRequests = requests.filter(request => {
-    const fullName = request.fullName || ""; // Handle null/undefined values
+    const fullName = request.fullName || "";
     return fullName.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
-  // Extracted table body content
   let tableBodyContent;
   
   if (loading) {
@@ -111,17 +108,12 @@ const Request = () => {
             {request.requestName}
           </Typography>
         </TableCell>
-        <TableCell>
+        {/* Document column with icon or dash */}
+        <TableCell sx={{ textAlign: 'center' }}>
           {request.document ? (
-            <Link 
-              href={`http://localhost:5555/uploads/${request.document}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              color="primary"
-              underline="hover"
-            >
-              View Document
-            </Link>
+            <Tooltip title="Document attached">
+              <Description color="action" fontSize="small" />
+            </Tooltip>
           ) : (
             <Typography variant="body2" color="textSecondary">-</Typography>
           )}
@@ -139,6 +131,22 @@ const Request = () => {
         </TableCell>
         <TableCell sx={{ textAlign: 'center' }}>
           <Box display="flex" justifyContent="center" gap={1}>
+            {/* View document action */}
+            {request.document && (
+              <Tooltip title="View document">
+                <IconButton
+                  color="info"
+                  size="small"
+                  component="a"
+                  href={`http://localhost:5555/uploads/${request.document}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Visibility fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
+            {/* Edit action */}
             <Tooltip title="Edit request">
               <IconButton 
                 color="primary" 
@@ -151,7 +159,7 @@ const Request = () => {
                 <Edit fontSize="small" />
               </IconButton>
             </Tooltip>
-            
+            {/* Delete action */}
             <Tooltip title="Delete request">
               <IconButton 
                 color="error" 
@@ -201,12 +209,10 @@ const Request = () => {
               }}
               sx={{ width: 300, backgroundColor: 'white' }}
             />
-            
             <Typography variant="body2" color="textSecondary">
               {filteredRequests.length} request(s) found
             </Typography>
           </Box>
-          
           <Button 
             variant="contained" 
             color="primary" 
@@ -229,7 +235,7 @@ const Request = () => {
                 <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[200] }}>Phone</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[200] }}>Address</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[200] }}>Request</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[200] }}>Document</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[200], textAlign: 'center' }}>Document</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[200] }}>Date</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[200] }}>Account #</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[200] }}>Message</TableCell>

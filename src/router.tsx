@@ -11,25 +11,16 @@ import Calculation from "./pages/user/Calculation";
 import ChangePassword from "./pages/user/ChangePassword";
 import Report from "./pages/user/Report";
 import MeterReaderBills from "./pages/user/MeterReaderBills";
+import PrivateRoute from "./pages/Auth/PrivateRoute"; // ✅ added
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <AuthDashboard />,
     children: [
-      {
-        path: "/",
-        element: <Navigate to="/login" />,
-      },
-      {
-        path: "/login",
-        element: <Login />,
-      },
-      {
-        path: "signup",
-        element: <Signup />,
-      },
-     
+      { path: "/", element: <Navigate to="/login" /> },
+      { path: "/login", element: <Login /> },
+      { path: "signup", element: <Signup /> },
     ],
   },
   {
@@ -37,14 +28,70 @@ export const router = createBrowserRouter([
     element: <Main />,
     children: [
       { path: "/", element: <Navigate to="/dashboard" /> },
-      { path: "/dashboard", element: <Dashboard /> },
-      { path: "/user", element: <User /> },
-      { path: "/complaint", element: <Complaint /> },
-      { path: "/request", element: <Request /> },
-      { path: "/calculation", element: <Calculation /> },
-      { path: "/meterreaderbills", element: <MeterReaderBills /> },
-      {path:"/change-password", element: <ChangePassword />},
-      { path: "/report", element: <Report /> },
+      {
+        path: "/dashboard",
+        element: (
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/user",
+        element: (
+          <PrivateRoute>
+            <User />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/complaint",
+        element: (
+          <PrivateRoute>
+            <Complaint />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/request",
+        element: (
+          <PrivateRoute>
+            <Request />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/calculation",
+        element: (
+          <PrivateRoute>
+            <Calculation />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/meterreaderbills",
+        element: (
+          <PrivateRoute>
+            <MeterReaderBills />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/change-password",
+        element: (
+          <PrivateRoute>
+            <ChangePassword />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/report",
+        element: (
+          <PrivateRoute>
+            <Report />
+          </PrivateRoute>
+        ),
+      },
     ],
   },
 ]);
