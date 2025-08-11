@@ -12,6 +12,7 @@ import ChangePassword from "./pages/user/ChangePassword";
 import Report from "./pages/user/Report";
 import MeterReaderBills from "./pages/user/MeterReaderBills";
 import PrivateRoute from "./pages/Auth/PrivateRoute"; // ✅ added
+import AggregateReport from "./pages/user/AggregateReport";
 
 export const router = createBrowserRouter([
   {
@@ -77,10 +78,10 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/change-password",
+        path: "/aggregate",
         element: (
           <PrivateRoute>
-            <ChangePassword />
+            <AggregateReport />
           </PrivateRoute>
         ),
       },

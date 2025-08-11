@@ -93,6 +93,12 @@ const Sidebar: React.FC = () => {
         { text: 'View Bill', link: '/meterreaderbills' },
       ],
     },
+
+     {
+    text: 'Aggregate Report',               // Hii ni menu mpya
+    icon: <Assessment sx={{ color: '#0288d1' }} />,
+    link: '/aggregate',
+  },
   ];
 
   const menuItems =

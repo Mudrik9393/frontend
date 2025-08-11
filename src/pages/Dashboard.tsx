@@ -90,7 +90,7 @@ const Dashboard = () => {
   }
 
   const requestChartData = {
-    labels: data.requestDistribution?.map(item => item.type) || [],
+    labels: data.requestDistribution?.map(item => item.type.split("_")[1]) || [],
     datasets: [{
       data: data.requestDistribution?.map(item => item.count) || [],
       backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],

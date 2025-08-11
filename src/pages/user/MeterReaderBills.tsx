@@ -70,6 +70,7 @@ export default function MeterReaderBills() {
             Total Amount: {bill.totalAmount.toLocaleString()} TZS
           </li>
         ))}
+        <button onClick={()=>print()}>print</button>
       </ul>
     );
   }
